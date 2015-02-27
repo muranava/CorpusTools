@@ -9,6 +9,36 @@ from corpustools.exceptions import DelimiterError
 
 import time
 
+def inspect_csv(path):
+    common_delimiters = [',','\t',':','|']
+
+    with open(path,'r') as f:
+        lines = []
+        head = f.readline().strip()
+        for i in range(5):
+            lines.append(f.readline())
+
+    best = ''
+    num = 1
+    for d in common_delimiters:
+        trial = len(head.split(d))
+        if len(trial) > num:
+            num = len(trial)
+            best = d
+    if best == '':
+        raise(PCTError(''))
+
+    head = head.split(best)
+    vals = {h: list() for h in head}
+
+    for line in lines:
+        l = line.split(best)
+        if len(l) != len(head):
+            raise(PCTError(''))
+        for i in range(len(head)):
+            vals[head[i]].append(l[i])
+
+
 
 def load_corpus_csv(corpus_name, path, delimiter, trans_delimiter='.',
                     feature_system_path = ''):
